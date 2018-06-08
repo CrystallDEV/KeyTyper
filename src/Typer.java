@@ -4,15 +4,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.FileWriter;
 
 /**
  * Created by Crystall on 06/08/2018
  */
 public class Typer extends JFrame implements KeyListener, ActionListener {
 
-    private JTextField txt_key;
+    private JTextArea txt_key;
+    private JLabel lbl_info;
     private JButton btn_confirm;
     private JButton btn_reset;
     private File file;
@@ -23,19 +25,28 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
          */
         setTitle("Typer - V1.0");
         setType(Window.Type.POPUP);
-        setPreferredSize(new Dimension(450, 108));
+        setPreferredSize(new Dimension(420, 320));
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setIconImage(Toolkit.getDefaultToolkit()
-                .getImage(Typer.class.getResource("/com/sun/javafx/scene/control/skin/modena/dialog-warning@2x.png")));
+        getContentPane().setBackground(Color.lightGray);
+        setIconImage(Toolkit.getDefaultToolkit().getImage(Typer.class.getResource("/com/sun/javafx/scene/control/skin/modena/dialog-warning@2x.png")));
         getContentPane().setLayout(null);
+
+        /**
+         * Info Label
+         */
+        lbl_info = new JLabel("Developed by Marek Hasselder");
+        lbl_info.setForeground(Color.BLUE);
+        lbl_info.setBounds(10, 220, 226, 14);
+        getContentPane().add(lbl_info);
 
         /**
          * Input Field
          */
-        txt_key = new JTextField();
-        txt_key.setBounds(10, 12, 366, 20);
+        txt_key = new JTextArea();
+        txt_key.setBounds(10, 12, 366, 200);
         txt_key.setColumns(10);
+        txt_key.setFont(new Font("Consolas", Font.BOLD, 16));
         getContentPane().add(txt_key);
 
 
@@ -43,7 +54,7 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
          * Submit button
          */
         btn_confirm = new JButton();
-        btn_confirm.setBounds(198, 39, 178, 23);
+        btn_confirm.setBounds(198, 239, 178, 23);
         btn_confirm.setText("Save to file");
         btn_confirm.setVisible(true);
         btn_confirm.setHorizontalAlignment(SwingConstants.CENTER);
@@ -53,7 +64,7 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
          * Reset button
          */
         btn_reset = new JButton();
-        btn_reset.setBounds(10, 39, 178, 23);
+        btn_reset.setBounds(10, 239, 178, 23);
         btn_reset.setText("Reset");
         btn_reset.setVisible(true);
         btn_reset.setHorizontalAlignment(SwingConstants.CENTER);
@@ -72,20 +83,23 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
      */
     public void saveToFile() {
         try {
-            file = new File(Typer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            file = new File("./keycodes.txt");
             if (!file.exists()) {
                 file.createNewFile();
             }
-            PrintWriter writer = new PrintWriter(file, "UTF-8");
-            writer.println(txt_key.getText());
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+            writer.append(txt_key.getText() + "\n");
             writer.close();
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-    public void clearText(JTextField field) {
-        field.setText("");
+    /**
+     * Clears the text of the input field
+     */
+    public void clearText() {
+        txt_key.setText("");
     }
 
     @Override
@@ -99,7 +113,10 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
         if (e.getSource() == txt_key && (Character.isAlphabetic(s) || Character.isDigit(s))) {
             e.consume();
             txt_key.setText(txt_key.getText() + Character.toUpperCase(s));
-            if ((txt_key.getText().length() + 1) % 5 == 0) {
+            int length = txt_key.getText().length() + 1;
+            if (length % 30 == 0) {
+                txt_key.setText(txt_key.getText() + "\n");
+            } else if (length % 6 == 0) {
                 txt_key.setText(txt_key.getText() + "-");
             }
         }
@@ -117,9 +134,9 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
     @Override public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btn_confirm) {
             saveToFile();
-            clearText(txt_key);
+            clearText();
         } else if (e.getSource() == btn_reset) {
-            clearText(txt_key);
+            clearText();
         }
     }
 }
