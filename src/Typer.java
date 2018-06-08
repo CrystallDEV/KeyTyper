@@ -88,11 +88,30 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
                 file.createNewFile();
             }
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-            writer.append(txt_key.getText() + "\n");
+            writer.append(txt_key.getText() + getSystemNewline());
             writer.close();
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    /**
+     * Returns the new line for the right system
+     * @return
+     */
+    public static String getSystemNewline() {
+        String eol = null;
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("mac")) {
+            int v = Integer.parseInt(System.getProperty("os.version"));
+            eol = (v <= 9 ? "\r" : "\n");
+        }
+        if (os.contains("nix"))
+            eol = "\n";
+        if (os.contains("win"))
+            eol = "\r\n";
+
+        return eol;
     }
 
     /**
@@ -115,7 +134,7 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
             txt_key.setText(txt_key.getText() + Character.toUpperCase(s));
             int length = txt_key.getText().length() + 1;
             if (length % 30 == 0) {
-                txt_key.setText(txt_key.getText() + "\n");
+                txt_key.setText(txt_key.getText() + getSystemNewline());
             } else if (length % 6 == 0) {
                 txt_key.setText(txt_key.getText() + "-");
             }
