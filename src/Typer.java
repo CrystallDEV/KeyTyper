@@ -132,7 +132,7 @@ public class Typer extends JFrame implements KeyListener, ActionListener {
         if (e.getSource() == txt_key && (Character.isAlphabetic(s) || Character.isDigit(s))) {
             e.consume();
             txt_key.setText(txt_key.getText() + Character.toUpperCase(s));
-            int length = txt_key.getText().length() + 1;
+            int length = txt_key.getText().replace("\r", "").length() + 1;
             if (length % 30 == 0) {
                 txt_key.setText(txt_key.getText() + getSystemNewline());
             } else if (length % 6 == 0) {
